@@ -30,7 +30,6 @@ export class UserService {
         };
       }
 
-      // Handle geolocation logic
       if (address) {
         coordinates = await this.geolocationService.getCoordinatesFromAddress(
           address
@@ -42,7 +41,6 @@ export class UserService {
         );
       }
 
-      // Save user in the repository with session
       const user = await this.userRepository.create(
         { name, email, address, coordinates },
         session
@@ -76,7 +74,7 @@ export class UserService {
         success: true,
         data: users,
       };
-    } catch (error: any) {
+    } catch (error) {
       return {
         success: false,
         error: {
@@ -87,7 +85,25 @@ export class UserService {
     }
   }
 
-  async update(id: string, updateData: any): Promise<Result<any>> {
+  async getById(id: string): Promise<Result<User | null>> {
+    try {
+      const user = await this.userRepository.findById(id);
+      return {
+        success: true,
+        data: user,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          message: error.message || 'Failed to retrieve user',
+          code: 'GET_USER_ERROR',
+        },
+      };
+    }
+  }
+
+  async update(id: string, updateData: SaveUserDTO): Promise<Result<User>> {
     const session = await this.sessionService.startSession();
     session.startTransaction();
 

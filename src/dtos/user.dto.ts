@@ -1,4 +1,4 @@
-type CoordinatesDTO = {
+export type CoordinatesDTO = {
   lat: number;
   lng: number;
 };

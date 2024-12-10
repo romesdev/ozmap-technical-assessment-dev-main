@@ -1,10 +1,10 @@
 import app from './app';
 import mongoose from 'mongoose';
-import { envServerSchema } from "./utils/env";
+import { envServerSchema } from './utils/env';
 
-const {DB_HOST, DB_PORT, DB_NAME, API_PORT} = envServerSchema
+const { DB_HOST, DB_PORT, DB_NAME, API_PORT } = envServerSchema;
 
-const MONGO_URI = `mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`
+const MONGO_URI = `mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`;
 
 mongoose
   .connect(MONGO_URI)

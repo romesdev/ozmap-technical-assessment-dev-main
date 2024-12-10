@@ -1,15 +1,21 @@
-import mongoose from 'mongoose';
-import { UserModel } from '../models/user.model';
+import mongoose, { Model } from 'mongoose';
 import { SaveUserDTO } from '../dtos/user.dto';
+import { User } from '../models/user.model';
 
 export class UserRepository {
+  constructor(private readonly model: Model<User>) {}
+
   async create(userData: SaveUserDTO, session?: mongoose.ClientSession) {
-    const [user] = await UserModel.create([userData], { session });
+    const [user] = await this.model.create([userData], { session });
     return user;
   }
 
   async find() {
-    return await UserModel.find();
+    return await this.model.find();
+  }
+
+  async findById(id: string) {
+    return await this.model.findById(id);
   }
 
   async update(
@@ -17,7 +23,7 @@ export class UserRepository {
     updateData: SaveUserDTO,
     session?: mongoose.ClientSession
   ) {
-    const user = UserModel.findByIdAndUpdate(id, updateData, {
+    const user = this.model.findByIdAndUpdate(id, updateData, {
       new: true,
       session,
     });
@@ -26,11 +32,11 @@ export class UserRepository {
   }
 
   async delete(id: string, session?: mongoose.ClientSession) {
-    return UserModel.findByIdAndDelete(id, { session }).lean().exec();
+    return this.model.findByIdAndDelete(id, { session }).lean().exec();
   }
 
   async findUserByEmail(email: string) {
-    const user = UserModel.findOne({ email });
+    const user = this.model.findOne({ email });
 
     return user;
   }

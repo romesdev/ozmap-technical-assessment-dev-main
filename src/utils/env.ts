@@ -8,6 +8,14 @@ const envSchema = z.object({
   DB_HOST: z.string().default('localhost'),
   DB_NAME: z.string().default('ozmap'),
   DB_PORT: z.string().default('27017'),
+  GEOCODING_API_URL: z
+    .string()
+    .url()
+    .default('https://nominatim.openstreetmap.org/search'),
+  REVERSE_API_URL: z
+    .string()
+    .url()
+    .default('https://nominatim.openstreetmap.org/reverse'),
 });
 
 const envServer = envSchema.safeParse(process.env);

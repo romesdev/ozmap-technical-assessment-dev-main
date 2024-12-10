@@ -1,54 +1,52 @@
-const GEOCODING_API_URL = 'https://nominatim.openstreetmap.org/search';
-const REVERSE_API_URL = 'https://nominatim.openstreetmap.org/reverse?';
-
+import { CoordinatesDTO } from '../dtos/user.dto';
 export class GeolocationService {
-  async getCoordinatesFromAddress(address: string) {
+  private geocodingApiUrl: string;
+  private reverseApiUrl: string;
+
+  constructor(geocodingApiUrl: string, reverseApiUrl: string) {
+    this.geocodingApiUrl = geocodingApiUrl;
+    this.reverseApiUrl = reverseApiUrl;
+  }
+
+  private async fetchFromAPI(url: string): Promise<any> {
     try {
-      const url = new URL(GEOCODING_API_URL);
-      url.searchParams.append('q', address);
-      url.searchParams.append('format', 'json');
-      url.searchParams.append('limit', '1');
-
-      const response = await fetch(url.toString());
+      const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch coordinates. Status: ${response.status}`
-        );
+        throw new Error(`HTTP Error: ${response.status}`);
       }
-
-      const data = await response.json();
-      if (data.length === 0) {
-        throw new Error('Address not found.');
-      }
-
-      const { lat, lon } = data[0];
-      return { lat, lng: lon };
-    } catch (error: any) {
-      throw new Error(`Error fetching coordinates: ${error.message}`);
+      return await response.json();
+    } catch (error) {
+      throw new Error(`Error during API request: ${error.message}`);
     }
   }
 
-  async getAddressFromCoordinates(lat: number, lng: number) {
-    try {
-      const url = new URL(REVERSE_API_URL);
-      url.searchParams.append('lat', lat.toString());
-      url.searchParams.append('lon', lng.toString());
-      url.searchParams.append('format', 'json');
-      url.searchParams.append('limit', '1');
+  async getCoordinatesFromAddress(address: string): Promise<CoordinatesDTO> {
+    const url = new URL(this.geocodingApiUrl);
+    url.searchParams.append('q', address);
+    url.searchParams.append('format', 'json');
+    url.searchParams.append('limit', '1');
 
-      const response = await fetch(url.toString());
-      if (!response.ok) {
-        throw new Error(`Failed to fetch address. Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.length === 0) {
-        throw new Error('Coordinates not found.');
-      }
-
-      return data.display_name;
-    } catch (error: any) {
-      throw new Error(`Error fetching address: ${error.message}`);
+    const data = await this.fetchFromAPI(url.toString());
+    if (data.length === 0) {
+      throw new Error('Address not found.');
     }
+
+    const { lat, lon } = data[0];
+    return { lat, lng: lon };
+  }
+
+  async getAddressFromCoordinates(lat: number, lng: number): Promise<string> {
+    const url = new URL(this.reverseApiUrl);
+    url.searchParams.append('lat', lat.toString());
+    url.searchParams.append('lon', lng.toString());
+    url.searchParams.append('format', 'json');
+    url.searchParams.append('limit', '1');
+
+    const data = await this.fetchFromAPI(url.toString());
+    if (data.length === 0) {
+      throw new Error('Coordinates not found.');
+    }
+
+    return data.display_name;
   }
 }

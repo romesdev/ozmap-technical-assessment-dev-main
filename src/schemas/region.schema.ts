@@ -39,7 +39,7 @@ const geometrySchema = z.object({
 });
 
 // Schema to validate region creation
-export const createRegionSchema = z.object({
+export const saveRegionSchema = z.object({
   name: z.string().min(1, 'The name is required.'),
   geometry: geometrySchema,
   ownerId: z.string().regex(/^[a-fA-F0-9]{24}$/, 'Invalid user ID.'), // MongoDB ObjectId
@@ -53,4 +53,29 @@ export const updateRegionSchema = z.object({
     .string()
     .regex(/^[a-fA-F0-9]{24}$/, 'Invalid user ID.')
     .optional(),
+});
+
+export const queryRegionsByDistanceSchema = z.object({
+  lat: z.coerce
+    .number({ required_error: 'Latitude is required' })
+    .min(-90, 'Latitude must be between -90 and 90')
+    .max(90, 'Latitude must be between -90 and 90'),
+  lng: z.coerce
+    .number({ required_error: 'Longitude is required' })
+    .min(-180, 'Longitude must be between -180 and 180')
+    .max(180, 'Longitude must be between -180 and 180'),
+  distance: z.coerce
+    .number({ required_error: 'Distance is required' })
+    .positive('Distance must be a positive number'),
+});
+
+export const queryRegionsByPointSchema = z.object({
+  lat: z.coerce
+    .number({ required_error: 'Latitude is required' })
+    .min(-90, 'Latitude must be between -90 and 90')
+    .max(90, 'Latitude must be between -90 and 90'),
+  lng: z.coerce
+    .number({ required_error: 'Longitude is required' })
+    .min(-180, 'Longitude must be between -180 and 180')
+    .max(180, 'Longitude must be between -180 and 180'),
 });

@@ -31,6 +31,17 @@ export class UserController {
     }
   }
 
+  async getById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const users = await this.userService.getById(id);
+      return res.status(200).json(users);
+    } catch (error) {
+      return res.status(500).json({ error: 'Error to get user' });
+    }
+  }
+
   async update(req: Request, res: Response) {
     const { id } = req.params;
 
