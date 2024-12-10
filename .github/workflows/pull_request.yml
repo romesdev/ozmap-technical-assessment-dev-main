@@ -10,17 +10,21 @@ jobs:
     name: 🎨 Lint Code 👓
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
         with:
-          node-version: '18'
+          version: 9
+          run_install: false
 
-      - name: Install dependencies
-        run: npm install
-
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
+    
       - name: Run Lint Check
         run: npx eslint src
 
@@ -28,34 +32,42 @@ jobs:
     name: 🏗 Build Project
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
         with:
-          node-version: '18'
+          version: 9
+          run_install: false
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
 
       - name: Build project
-        run: npm run build
+        run: pnpm run build
 
   test:
     name: 🧪 Run Unit Tests 👨‍🔬
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
         with:
-          node-version: '18'
+          version: 9
+          run_install: false
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
 
       - name: Run Unit Tests
-        run: npm run test
+        run: pnpm run test
