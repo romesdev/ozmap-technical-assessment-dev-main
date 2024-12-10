@@ -24,6 +24,9 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install
     
       - name: Run Lint Check
         run: npx eslint src
@@ -46,6 +49,9 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
+    
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Build project
         run: pnpm run build
@@ -68,6 +74,9 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Run Unit Tests
         run: pnpm run test
