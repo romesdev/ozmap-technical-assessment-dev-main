@@ -5,12 +5,6 @@ export class UserController {
   static async createUser(req: Request, res: Response) {
     const { name, email, address, coordinates } = req.body;
 
-    if ((!address && !coordinates) || (address && coordinates)) {
-      return res.status(400).json({
-        error: 'Please provide only address or coordinates, not both',
-      });
-    }
-
     try {
       const user = await UserModel.create({
         name,
@@ -37,13 +31,6 @@ export class UserController {
 
   static async updateUser(req: Request, res: Response) {
     const { id } = req.params;
-    const { address, coordinates } = req.body;
-
-    if (address && coordinates) {
-      return res.status(400).json({
-        error: 'Please provide only address or coordinates, not both',
-      });
-    }
 
     try {
       const user = await UserModel.findByIdAndUpdate(id, req.body, {
