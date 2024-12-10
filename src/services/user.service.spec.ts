@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { UserService } from '../services/user.service';
-import { UserRepository } from '../repositories/user.repository';
-import { GeolocationService } from '../services/geolocation.service';
-import { SessionService } from '../services/session.service';
-import mongoose from 'mongoose';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { UserService } from "../services/user.service";
+import { UserRepository } from "../repositories/user.repository";
+import { GeolocationService } from "../services/geolocation.service";
+import { SessionService } from "../services/session.service";
+import mongoose from "mongoose";
 
-describe('UserService', () => {
+describe("UserService", () => {
   let userService: UserService;
   let userRepository: UserRepository;
   let geolocationService: GeolocationService;
@@ -32,12 +32,12 @@ describe('UserService', () => {
     userService = new UserService(
       geolocationService,
       userRepository,
-      sessionService
+      sessionService,
     );
   });
 
-  describe('create', () => {
-    it('should create a user successfully', async () => {
+  describe("create", () => {
+    it("should create a user successfully", async () => {
       const mockSession = {
         startTransaction: vi.fn(),
         commitTransaction: vi.fn(),
@@ -47,9 +47,9 @@ describe('UserService', () => {
       sessionService.startSession = vi.fn().mockResolvedValue(mockSession);
 
       const userData = {
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        address: 'Some Address',
+        name: "John Doe",
+        email: "john.doe@example.com",
+        address: "Some Address",
         coordinates: { lat: 10, lng: 20 },
       };
       const userMock = { ...userData, _id: new mongoose.Types.ObjectId() };
@@ -67,11 +67,11 @@ describe('UserService', () => {
       expect(userRepository.create).toHaveBeenCalledWith(userData, mockSession);
     });
 
-    it('should return error if email already exists', async () => {
+    it("should return error if email already exists", async () => {
       const userData = {
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        address: 'Some Address',
+        name: "John Doe",
+        email: "john.doe@example.com",
+        address: "Some Address",
         coordinates: { lat: 10, lng: 20 },
       };
       const mockSession = {
@@ -90,16 +90,16 @@ describe('UserService', () => {
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toBe(
-        'The provided email is already in use.'
+        "The provided email is already in use.",
       );
-      expect(result.error?.code).toBe('EMAIL_ALREADY_EXISTS');
+      expect(result.error?.code).toBe("EMAIL_ALREADY_EXISTS");
     });
 
-    it('should return error if geolocation service fails', async () => {
+    it("should return error if geolocation service fails", async () => {
       const userData = {
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        address: 'Some Address',
+        name: "John Doe",
+        email: "john.doe@example.com",
+        address: "Some Address",
       };
       const mockSession = {
         startTransaction: vi.fn(),
@@ -112,18 +112,18 @@ describe('UserService', () => {
       userRepository.findUserByEmail = vi.fn().mockResolvedValue(null);
       geolocationService.getCoordinatesFromAddress = vi
         .fn()
-        .mockRejectedValue(new Error('Geolocation error'));
+        .mockRejectedValue(new Error("Geolocation error"));
 
       const result = await userService.create(userData);
 
       expect(result.success).toBe(false);
-      expect(result.error?.message).toBe('Geolocation error');
-      expect(result.error?.code).toBe('CREATE_USER_ERROR');
+      expect(result.error?.message).toBe("Geolocation error");
+      expect(result.error?.code).toBe("CREATE_USER_ERROR");
     });
   });
 
-  describe('update', () => {
-    it('should update user successfully', async () => {
+  describe("update", () => {
+    it("should update user successfully", async () => {
       const mockSession = {
         startTransaction: vi.fn(),
         commitTransaction: vi.fn(),
@@ -133,11 +133,11 @@ describe('UserService', () => {
       sessionService.startSession = vi.fn().mockResolvedValue(mockSession);
 
       const userId = new mongoose.Types.ObjectId();
-      const updateData = { email: 'new.email@example.com' };
+      const updateData = { name: "John Doe", email: "new.email@example.com" };
       const existingUser = {
         _id: userId,
-        name: 'John Doe',
-        email: 'john.doe@example.com',
+        name: "John Doe",
+        email: "john.doe@example.com",
       };
 
       userRepository.findUserByEmail = vi.fn().mockResolvedValue(null);
@@ -152,13 +152,16 @@ describe('UserService', () => {
       expect(userRepository.update).toHaveBeenCalledWith(
         userId.toString(),
         updateData,
-        mockSession
+        mockSession,
       );
     });
 
-    it('should return error if email already exists during update', async () => {
+    it("should return error if email already exists during update", async () => {
       const userId = new mongoose.Types.ObjectId();
-      const updateData = { email: 'existing.email@example.com' };
+      const updateData = {
+        name: "John Doe",
+        email: "existing.email@example.com",
+      };
 
       const mockSession = {
         startTransaction: vi.fn(),
@@ -176,14 +179,17 @@ describe('UserService', () => {
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toBe(
-        'The provided email is already in use.'
+        "The provided email is already in use.",
       );
-      expect(result.error?.code).toBe('EMAIL_ALREADY_EXISTS');
+      expect(result.error?.code).toBe("EMAIL_ALREADY_EXISTS");
     });
 
-    it('should return error if user not found during update', async () => {
+    it("should return error if user not found during update", async () => {
       const userId = new mongoose.Types.ObjectId();
-      const updateData = { name: 'Updated Name' };
+      const updateData = {
+        name: "Updated Name",
+        email: "test.update@example.com",
+      };
 
       userRepository.findUserByEmail = vi.fn().mockResolvedValue(null);
       userRepository.update = vi.fn().mockResolvedValue(null);
@@ -199,13 +205,13 @@ describe('UserService', () => {
       const result = await userService.update(userId.toString(), updateData);
 
       expect(result.success).toBe(false);
-      expect(result.error?.message).toBe('User not found');
-      expect(result.error?.code).toBe('USER_NOT_FOUND');
+      expect(result.error?.message).toBe("User not found");
+      expect(result.error?.code).toBe("USER_NOT_FOUND");
     });
   });
 
-  describe('delete', () => {
-    it('should delete user successfully', async () => {
+  describe("delete", () => {
+    it("should delete user successfully", async () => {
       const mockSession = {
         startTransaction: vi.fn(),
         commitTransaction: vi.fn(),
@@ -224,11 +230,11 @@ describe('UserService', () => {
       expect(result.data).toBeNull();
       expect(userRepository.delete).toHaveBeenCalledWith(
         userId.toString(),
-        mockSession
+        mockSession,
       );
     });
 
-    it('should return error if user not found during delete', async () => {
+    it("should return error if user not found during delete", async () => {
       const userId = new mongoose.Types.ObjectId();
 
       const mockSession = {
@@ -244,8 +250,8 @@ describe('UserService', () => {
       const result = await userService.delete(userId.toString());
 
       expect(result.success).toBe(false);
-      expect(result.error?.message).toBe('User not found');
-      expect(result.error?.code).toBe('USER_NOT_FOUND');
+      expect(result.error?.message).toBe("User not found");
+      expect(result.error?.code).toBe("USER_NOT_FOUND");
     });
   });
 });
