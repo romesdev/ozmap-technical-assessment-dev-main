@@ -1,16 +1,27 @@
 import { Request, Response } from 'express';
 import { UserModel } from '../models/user.model';
+import { GeolocationService } from '../services/geolocation.service';
 
 export class UserController {
   static async createUser(req: Request, res: Response) {
     const { name, email, address, coordinates } = req.body;
 
     try {
+      let coordinatesRetrieved = coordinates
+      let addressRetrieved = address
+      if (address) {
+        coordinatesRetrieved = await GeolocationService.getCoordinatesFromAddress(address)
+        console.log(coordinatesRetrieved)
+      } else {
+        addressRetrieved = await GeolocationService.getAddressFromCoordinates(coordinates.lat, coordinates.lng);
+        console.log(addressRetrieved)
+      }
+
       const user = await UserModel.create({
         name,
         email,
-        address,
-        coordinates,
+        address: addressRetrieved,
+        coordinates: coordinatesRetrieved,
       });
       return res.status(201).json(user);
     } catch (error) {
