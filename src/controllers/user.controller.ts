@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { UserService } from 'src/services/user.service';
+import { Request, Response } from "express";
+import { UserService } from "src/services/user.service";
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -7,27 +7,33 @@ export class UserController {
   async create(req: Request, res: Response) {
     try {
       const { name, email, address, coordinates } = req.body;
-      const user = await this.userService.create({
+      const response = await this.userService.create({
         name,
         email,
         address,
         coordinates,
       });
 
-      return res.status(201).json(user);
+      if (response.success === false) return res.status(400).json(response);
+
+      return res.status(201).json(response);
     } catch (error) {
       return res
         .status(500)
-        .json({ error: 'Error to create user', details: error });
+        .json({ error: "Error to create user", details: error });
     }
   }
 
-  async get(req: Request, res: Response) {
+  async get(_req: Request, res: Response) {
     try {
-      const users = await this.userService.get();
-      return res.status(200).json(users);
+      const response = await this.userService.get();
+      if (response.success === false) return res.status(400).json(response);
+
+      return res.status(200).json(response);
     } catch (error) {
-      return res.status(500).json({ error: 'Error to get users' });
+      return res
+        .status(500)
+        .json({ error: "Error to get users", details: error });
     }
   }
 
@@ -35,10 +41,15 @@ export class UserController {
     try {
       const { id } = req.params;
 
-      const users = await this.userService.getById(id);
-      return res.status(200).json(users);
+      const response = await this.userService.getById(id);
+
+      if (response.success === false) return res.status(400).json(response);
+
+      return res.status(200).json(response);
     } catch (error) {
-      return res.status(500).json({ error: 'Error to get user' });
+      return res
+        .status(500)
+        .json({ error: "Error to get user", details: error });
     }
   }
 
@@ -46,13 +57,14 @@ export class UserController {
     const { id } = req.params;
 
     try {
-      const user = await this.userService.update(id, req.body);
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      return res.status(200).json(user);
+      const response = await this.userService.update(id, req.body);
+      if (response.success === false) return res.status(400).json(response);
+
+      return res.status(200).json(response);
     } catch (error) {
-      return res.status(500).json({ error: 'Error to update user' });
+      return res
+        .status(500)
+        .json({ error: "Error to update user", details: error });
     }
   }
 
@@ -60,13 +72,14 @@ export class UserController {
     const { id } = req.params;
 
     try {
-      const user = await this.userService.delete(id);
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      return res.status(200).json({ message: 'User deleted with success' });
+      const response = await this.userService.delete(id);
+      if (response.success === false) return res.status(400).json(response);
+
+      return res.status(200).json({ message: "User deleted with success" });
     } catch (error) {
-      return res.status(500).json({ error: 'Error to delete user' });
+      return res
+        .status(500)
+        .json({ error: "Error to delete user", details: error });
     }
   }
 }

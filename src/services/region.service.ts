@@ -2,19 +2,19 @@ import {
   QueryByDistanceDTO,
   QueryByPointDTO,
   SaveRegionDTO,
-} from '../dtos/region.dto';
-import { RegionRepository } from '../repositories/region.repository';
-import { UserRepository } from '../repositories/user.repository';
-import { SessionService } from './session.service';
-import { Region } from '../models/region.model';
-import { Result } from '../utils/types';
-import { FilterQuery } from 'mongoose';
+} from "../dtos/region.dto";
+import { RegionRepository } from "../repositories/region.repository";
+import { UserRepository } from "../repositories/user.repository";
+import { SessionService } from "./session.service";
+import { Region } from "../models/region.model";
+import { Result } from "../utils/types";
+import { FilterQuery } from "mongoose";
 
 export class RegionService {
   constructor(
     private readonly regionRepository: RegionRepository,
     private readonly userRepository: UserRepository,
-    private readonly sessionService: SessionService
+    private readonly sessionService: SessionService,
   ) {}
 
   async create(data: SaveRegionDTO): Promise<Result<Region>> {
@@ -29,8 +29,8 @@ export class RegionService {
         return {
           success: false,
           error: {
-            message: 'The provided user id not exists',
-            code: 'USER_NOT_FOUND',
+            message: "The provided user id not exists",
+            code: "USER_NOT_FOUND",
           },
         };
       }
@@ -41,7 +41,7 @@ export class RegionService {
           geometry,
           owner: owner._id,
         },
-        session
+        session,
       );
 
       await session.commitTransaction();
@@ -58,8 +58,8 @@ export class RegionService {
       return {
         success: false,
         error: {
-          message: error.message || 'Failed to create region',
-          code: 'CREATE_REGION_ERROR',
+          message: error.message || "Failed to create region",
+          code: "CREATE_REGION_ERROR",
         },
       };
     }
@@ -76,8 +76,8 @@ export class RegionService {
       return {
         success: false,
         error: {
-          message: error.message || 'Failed to retrieve regions',
-          code: 'GET_REGIONS_ERROR',
+          message: error.message || "Failed to retrieve regions",
+          code: "GET_REGIONS_ERROR",
         },
       };
     }
@@ -94,8 +94,8 @@ export class RegionService {
       return {
         success: false,
         error: {
-          message: error.message || 'Failed to retrieve regions',
-          code: 'GET_REGIONS_ERROR',
+          message: error.message || "Failed to retrieve regions",
+          code: "GET_REGIONS_ERROR",
         },
       };
     }
@@ -106,7 +106,7 @@ export class RegionService {
       const { lat, lng } = queryInput;
 
       const point = {
-        type: 'Point',
+        type: "Point",
         coordinates: [
           parseFloat(lat as unknown as string),
           parseFloat(lng as unknown as string),
@@ -129,8 +129,8 @@ export class RegionService {
       return {
         success: false,
         error: {
-          message: error.message || 'Failed to retrieve regions',
-          code: 'GET_REGIONS_ERROR',
+          message: error.message || "Failed to retrieve regions",
+          code: "GET_REGIONS_ERROR",
         },
       };
     }
@@ -144,7 +144,7 @@ export class RegionService {
         geometry: {
           $near: {
             $geometry: {
-              type: 'Point',
+              type: "Point",
               coordinates: [
                 parseFloat(lat as unknown as string),
                 parseFloat(lng as unknown as string),
@@ -164,8 +164,8 @@ export class RegionService {
       return {
         success: false,
         error: {
-          message: error.message || 'Failed to retrieve regions',
-          code: 'GET_REGIONS_ERROR',
+          message: error.message || "Failed to retrieve regions",
+          code: "GET_REGIONS_ERROR",
         },
       };
     }
@@ -183,8 +183,8 @@ export class RegionService {
         return {
           success: false,
           error: {
-            message: 'Region not found',
-            code: 'REGION_NOT_FOUND',
+            message: "Region not found",
+            code: "REGION_NOT_FOUND",
           },
         };
       }
@@ -196,8 +196,8 @@ export class RegionService {
           return {
             success: false,
             error: {
-              message: 'The provided user id does not exist',
-              code: 'USER_NOT_FOUND',
+              message: "The provided user id does not exist",
+              code: "USER_NOT_FOUND",
             },
           };
         }
@@ -214,15 +214,15 @@ export class RegionService {
       const updatedRegion = await this.regionRepository.update(
         id,
         updateData,
-        session
+        session,
       );
 
       if (!updatedRegion) {
         return {
           success: false,
           error: {
-            message: 'Failed to update the region',
-            code: 'UPDATE_REGION_ERROR',
+            message: "Failed to update the region",
+            code: "UPDATE_REGION_ERROR",
           },
         };
       }
@@ -234,15 +234,15 @@ export class RegionService {
         success: true,
         data: updatedRegion,
       };
-    } catch (error: any) {
+    } catch (error) {
       await session.abortTransaction();
       session.endSession();
 
       return {
         success: false,
         error: {
-          message: error.message || 'Failed to update region',
-          code: 'UPDATE_REGION_ERROR',
+          message: error.message || "Failed to update region",
+          code: "UPDATE_REGION_ERROR",
         },
       };
     }
@@ -259,8 +259,8 @@ export class RegionService {
         return {
           success: false,
           error: {
-            message: 'Region not found',
-            code: 'REGION_NOT_FOUND',
+            message: "Region not found",
+            code: "REGION_NOT_FOUND",
           },
         };
       }
@@ -279,8 +279,8 @@ export class RegionService {
       return {
         success: false,
         error: {
-          message: error.message || 'Failed to delete region',
-          code: 'REGION_USER_ERROR',
+          message: error.message || "Failed to delete region",
+          code: "REGION_USER_ERROR",
         },
       };
     }
