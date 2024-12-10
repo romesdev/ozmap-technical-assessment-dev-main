@@ -2,7 +2,7 @@ const GEOCODING_API_URL = 'https://nominatim.openstreetmap.org/search';
 const REVERSE_API_URL = 'https://nominatim.openstreetmap.org/reverse?';
 
 export class GeolocationService {
-  static async getCoordinatesFromAddress(address: string) {
+  async getCoordinatesFromAddress(address: string) {
     try {
       const url = new URL(GEOCODING_API_URL);
       url.searchParams.append('q', address);
@@ -10,7 +10,6 @@ export class GeolocationService {
       url.searchParams.append('limit', '1');
 
       const response = await fetch(url.toString());
-      console.log(response);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch coordinates. Status: ${response.status}`
@@ -29,9 +28,8 @@ export class GeolocationService {
     }
   }
 
-  static async getAddressFromCoordinates(lat: number, lng: number) {
+  async getAddressFromCoordinates(lat: number, lng: number) {
     try {
-      console.log(lat, lng);
       const url = new URL(REVERSE_API_URL);
       url.searchParams.append('lat', lat.toString());
       url.searchParams.append('lon', lng.toString());

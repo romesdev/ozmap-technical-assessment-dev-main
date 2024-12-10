@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { RegionController } from '../controllers/region.controller';
-import { validateData } from '../middlewares/validationMiddleware';
+import { validateData } from '../middlewares/validation.middleware';
 import { createRegionSchema } from '../schemas/region.schema';
 
 const router = Router();

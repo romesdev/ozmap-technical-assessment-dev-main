@@ -1,28 +1,19 @@
 import { Request, Response } from 'express';
-import { UserModel } from '../models/user.model';
-import { GeolocationService } from '../services/geolocation.service';
+import { UserService } from 'src/services/user.service';
 
 export class UserController {
-  static async createUser(req: Request, res: Response) {
-    const { name, email, address, coordinates } = req.body;
+  constructor(private readonly userService: UserService) {}
 
+  async create(req: Request, res: Response) {
     try {
-      let coordinatesRetrieved = coordinates
-      let addressRetrieved = address
-      if (address) {
-        coordinatesRetrieved = await GeolocationService.getCoordinatesFromAddress(address)
-        console.log(coordinatesRetrieved)
-      } else {
-        addressRetrieved = await GeolocationService.getAddressFromCoordinates(coordinates.lat, coordinates.lng);
-        console.log(addressRetrieved)
-      }
-
-      const user = await UserModel.create({
+      const { name, email, address, coordinates } = req.body;
+      const user = await this.userService.create({
         name,
         email,
-        address: addressRetrieved,
-        coordinates: coordinatesRetrieved,
+        address,
+        coordinates,
       });
+
       return res.status(201).json(user);
     } catch (error) {
       return res
@@ -31,22 +22,20 @@ export class UserController {
     }
   }
 
-  static async getUsers(req: Request, res: Response) {
+  async get(req: Request, res: Response) {
     try {
-      const users = await UserModel.find();
+      const users = await this.userService.get();
       return res.status(200).json(users);
     } catch (error) {
       return res.status(500).json({ error: 'Error to get users' });
     }
   }
 
-  static async updateUser(req: Request, res: Response) {
+  async update(req: Request, res: Response) {
     const { id } = req.params;
 
     try {
-      const user = await UserModel.findByIdAndUpdate(id, req.body, {
-        new: true,
-      });
+      const user = await this.userService.update(id, req.body);
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -56,10 +45,11 @@ export class UserController {
     }
   }
 
-  static async deleteUser(req: Request, res: Response) {
+  async delete(req: Request, res: Response) {
     const { id } = req.params;
+
     try {
-      const user = await UserModel.findByIdAndDelete(id);
+      const user = await this.userService.delete(id);
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
