@@ -1,30 +1,29 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response } from "express";
 
 export interface AppError extends Error {
   statusCode?: number;
-  details?: any;
+  details?: unknown;
 }
 
 export function errorHandlerMiddleware(
   err: AppError,
-  req: Request,
+  _: unknown,
   res: Response,
-  next: NextFunction
 ) {
   const statusCode = err.statusCode || 500;
 
-  const message = err.message || 'An unexpected error occurred';
+  const message = err.message || "An unexpected error occurred";
 
   res.status(statusCode).json({
     error: true,
     message,
-    details: err.details || null, // Detalhes adicionais, se existirem
+    details: err.details || null,
   });
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== "production") {
     console.error(
       `[ERROR] ${statusCode} - ${message}`,
-      err.details || err.stack
+      err.details || err.stack,
     );
   }
 }
