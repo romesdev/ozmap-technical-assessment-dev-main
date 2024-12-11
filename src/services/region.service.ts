@@ -104,12 +104,11 @@ export class RegionService {
   async getByPoint(queryInput: QueryByPointDTO): Promise<Result<Region[]>> {
     try {
       const { lat, lng } = queryInput;
-
       const point = {
         type: "Point",
         coordinates: [
-          parseFloat(lat as unknown as string),
           parseFloat(lng as unknown as string),
+          parseFloat(lat as unknown as string),
         ],
       };
 
@@ -139,15 +138,14 @@ export class RegionService {
   async getByDistance(queryInput: QueryByDistanceDTO) {
     try {
       const { lat, lng, distance } = queryInput;
-
       const query: FilterQuery<Region> = {
         geometry: {
           $near: {
             $geometry: {
               type: "Point",
               coordinates: [
-                parseFloat(lat as unknown as string),
                 parseFloat(lng as unknown as string),
+                parseFloat(lat as unknown as string),
               ],
             },
             $maxDistance: parseFloat(distance as unknown as string),
