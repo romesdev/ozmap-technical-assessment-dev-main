@@ -1,7 +1,7 @@
 export type Coordinates = [number, number];
 
 export type Geometry = {
-  type: 'Polygon';
+  type: "Polygon";
   coordinates: Coordinates[][];
 };
 
@@ -23,7 +23,7 @@ export type QueryByDistanceDTO = {
   distance: string;
 };
 
-export type QueryByPointDTO = {
+export type CoordinatesPointDTO = {
   lat: string;
   lng: string;
 };

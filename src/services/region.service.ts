@@ -1,6 +1,6 @@
 import {
   QueryByDistanceDTO,
-  QueryByPointDTO,
+  CoordinatesPointDTO,
   SaveRegionDTO,
 } from "../dtos/region.dto";
 import { RegionRepository } from "../repositories/region.repository";
@@ -122,7 +122,7 @@ export class RegionService {
   }
 
   async getByPoint(
-    queryInput: QueryByPointDTO,
+    coordinatesInput: CoordinatesPointDTO,
     page: number = 1,
     limit: number = 10,
   ): Promise<Result<Region[]>> {
@@ -130,7 +130,7 @@ export class RegionService {
 
     session.startTransaction();
     try {
-      const { lat, lng } = queryInput;
+      const { lat, lng } = coordinatesInput;
       const point = {
         type: "Point",
         coordinates: [

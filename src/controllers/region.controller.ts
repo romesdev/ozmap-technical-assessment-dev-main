@@ -51,13 +51,13 @@ export class RegionController {
     try {
       const { lat, lng, page, limit } = req.query;
 
-      const query = {
+      const coordinates = {
         lat: lat as unknown as string,
         lng: lng as unknown as string,
       };
 
       const response = await this.regionService.getByPoint(
-        query,
+        coordinates,
         Number(page),
         Number(limit),
       );
