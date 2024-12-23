@@ -1,5 +1,6 @@
-import { ZodTypeAny, ZodError } from 'zod';
-import { Request, Response, NextFunction } from 'express';
+import { ZodTypeAny, ZodError } from "zod";
+import { Request, Response, NextFunction } from "express";
+import { HTTP_STATUS_CODE } from "../utils/constants";
 
 export function validateQuery(schema: ZodTypeAny) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -9,13 +10,13 @@ export function validateQuery(schema: ZodTypeAny) {
     } catch (error) {
       if (error instanceof ZodError) {
         const errorMessages = error.errors.map((issue) => ({
-          message: `${issue.path.join('.')} is ${issue.message}`,
+          message: `${issue.path.join(".")} is ${issue.message}`,
         }));
         return res
-          .status(400)
-          .json({ error: 'Invalid query parameters', details: errorMessages });
+          .status(HTTP_STATUS_CODE.BAD_REQUEST)
+          .json({ error: "Invalid query parameters", details: errorMessages });
       }
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   };
 }

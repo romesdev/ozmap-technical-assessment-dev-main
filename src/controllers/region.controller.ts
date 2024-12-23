@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { RegionService } from "../services/region.service";
+import { HTTP_STATUS_CODE } from "../utils/constants";
 
 export class RegionController {
   constructor(private readonly regionService: RegionService) {}
@@ -14,13 +15,14 @@ export class RegionController {
         ownerId,
       });
 
-      if (response.success === false) return res.status(400).json(response);
+      if (response.success === false)
+        return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 
-      return res.status(201).json(response);
+      return res.status(HTTP_STATUS_CODE.CREATED).json(response);
     } catch (error) {
       console.error("Error to create a region", error);
       return res
-        .status(500)
+        .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ message: "Error to create a region", details: error });
     }
   }
@@ -28,13 +30,14 @@ export class RegionController {
   async get(req: Request, res: Response) {
     try {
       const response = await this.regionService.get();
-      if (response.success === false) return res.status(400).json(response);
+      if (response.success === false)
+        return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 
-      return res.status(200).json(response);
+      return res.status(HTTP_STATUS_CODE.OK).json(response);
     } catch (error) {
       console.error("Error to get regions", error);
       return res
-        .status(500)
+        .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ message: "Error to get regions", details: error });
     }
   }
@@ -49,13 +52,14 @@ export class RegionController {
       };
 
       const response = await this.regionService.getByPoint(query);
-      if (response.success === false) return res.status(400).json(response);
+      if (response.success === false)
+        return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 
-      return res.status(200).json(response);
+      return res.status(HTTP_STATUS_CODE.OK).json(response);
     } catch (error) {
       console.error("Error to get regions", error);
       return res
-        .status(500)
+        .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ message: "Error to get regions", details: error });
     }
   }
@@ -71,13 +75,14 @@ export class RegionController {
       };
 
       const response = await this.regionService.getByDistance(query);
-      if (response.success === false) return res.status(400).json(response);
+      if (response.success === false)
+        return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 
-      return res.status(200).json(response);
+      return res.status(HTTP_STATUS_CODE.OK).json(response);
     } catch (error) {
       console.error("Error to get regions", error);
       return res
-        .status(500)
+        .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ message: "Error to get regions", details: error });
     }
   }
@@ -87,12 +92,13 @@ export class RegionController {
 
       const response = await this.regionService.getById(id);
 
-      if (response.success === false) return res.status(400).json(response);
+      if (response.success === false)
+        return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 
-      return res.status(200).json(response);
+      return res.status(HTTP_STATUS_CODE.OK).json(response);
     } catch (error) {
       return res
-        .status(500)
+        .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ error: "Error to get region", details: error });
     }
   }
@@ -102,12 +108,13 @@ export class RegionController {
 
     try {
       const response = await this.regionService.update(id, req.body);
-      if (response.success === false) return res.status(400).json(response);
+      if (response.success === false)
+        return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 
-      return res.status(200).json(response);
+      return res.status(HTTP_STATUS_CODE.OK).json(response);
     } catch (error) {
       return res
-        .status(500)
+        .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ error: "Error to update region", details: error });
     }
   }
@@ -117,12 +124,15 @@ export class RegionController {
 
     try {
       const response = await this.regionService.delete(id);
-      if (response.success === false) return res.status(400).json(response);
+      if (response.success === false)
+        return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 
-      return res.status(200).json({ message: "Region deleted with success" });
+      return res
+        .status(HTTP_STATUS_CODE.OK)
+        .json({ message: "Region deleted with success" });
     } catch (error) {
       return res
-        .status(500)
+        .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
         .json({ error: "Error to delete region", details: error });
     }
   }

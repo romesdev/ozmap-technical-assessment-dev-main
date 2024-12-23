@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { HTTP_STATUS_CODE } from "../utils/constants";
 
 export interface AppError extends Error {
   statusCode?: number;
@@ -10,7 +11,7 @@ export function errorHandlerMiddleware(
   _: unknown,
   res: Response,
 ) {
-  const statusCode = err.statusCode || 500;
+  const statusCode = err.statusCode || HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR;
 
   const message = err.message || "An unexpected error occurred";
 
