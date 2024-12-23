@@ -23,7 +23,7 @@ export class RegionService {
     session.startTransaction();
     try {
       const { name, geometry, ownerId } = data;
-      const owner = await this.userRepository.findById(ownerId);
+      const owner = await this.userRepository.findById(ownerId, session);
 
       if (!owner) {
         return {

@@ -68,13 +68,22 @@ export class UserService {
   }
 
   async get(): Promise<Result<User[]>> {
+    const session = await this.sessionService.startSession();
+    session.startTransaction();
+
     try {
-      const users = await this.userRepository.find();
+      const users = await this.userRepository.find(session);
+      await session.commitTransaction();
+      session.endSession();
+
       return {
         success: true,
         data: users,
       };
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+
       return {
         success: false,
         error: {
@@ -86,13 +95,19 @@ export class UserService {
   }
 
   async getById(id: string): Promise<Result<User | null>> {
+    const session = await this.sessionService.startSession();
+    session.startTransaction();
     try {
-      const user = await this.userRepository.findById(id);
+      const user = await this.userRepository.findById(id, session);
+      await session.commitTransaction();
+      session.endSession();
       return {
         success: true,
         data: user,
       };
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
       return {
         success: false,
         error: {
