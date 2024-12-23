@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError, ZodTypeAny } from "zod";
 import { HTTP_STATUS_CODE } from "../utils/constants";
+import { errorHandlerMiddleware } from "./errorHandler.middleware";
 
 export function validateData(schema: ZodTypeAny) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -15,11 +16,9 @@ export function validateData(schema: ZodTypeAny) {
         res
           .status(HTTP_STATUS_CODE.BAD_REQUEST)
           .json({ error: "Invalid data", details: errorMessages });
-      } else {
-        res
-          .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
-          .json({ error: "Internal Server Error" });
       }
+
+      next(errorHandlerMiddleware);
     }
   };
 }

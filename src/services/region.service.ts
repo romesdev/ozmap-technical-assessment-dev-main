@@ -100,6 +100,16 @@ export class RegionService {
     try {
       const region = await this.regionRepository.findById(id, session);
 
+      if (!region) {
+        return {
+          success: false,
+          error: {
+            message: "Region not found",
+            code: "GET_REGION_ERROR",
+          },
+        };
+      }
+
       await session.commitTransaction();
       session.endSession();
 

@@ -99,6 +99,17 @@ export class UserService {
     session.startTransaction();
     try {
       const user = await this.userRepository.findById(id, session);
+
+      if (!user) {
+        return {
+          success: false,
+          error: {
+            message: "User not found",
+            code: "GET_USER_ERROR",
+          },
+        };
+      }
+
       await session.commitTransaction();
       session.endSession();
       return {

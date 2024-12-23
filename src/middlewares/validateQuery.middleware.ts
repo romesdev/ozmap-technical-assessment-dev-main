@@ -1,6 +1,7 @@
 import { ZodTypeAny, ZodError } from "zod";
 import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS_CODE } from "../utils/constants";
+import { errorHandlerMiddleware } from "./errorHandler.middleware";
 
 export function validateQuery(schema: ZodTypeAny) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -16,7 +17,7 @@ export function validateQuery(schema: ZodTypeAny) {
           .status(HTTP_STATUS_CODE.BAD_REQUEST)
           .json({ error: "Invalid query parameters", details: errorMessages });
       }
-      return res.status(500).json({ error: "Internal Server Error" });
+      next(errorHandlerMiddleware);
     }
   };
 }
