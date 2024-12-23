@@ -66,13 +66,23 @@ export class RegionService {
   }
 
   async get(): Promise<Result<Region[]>> {
+    const session = await this.sessionService.startSession();
+
+    session.startTransaction();
     try {
-      const regions = await this.regionRepository.find();
+      const regions = await this.regionRepository.find(session);
+
+      await session.commitTransaction();
+      session.endSession();
+
       return {
         success: true,
         data: regions,
       };
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+
       return {
         success: false,
         error: {
@@ -84,13 +94,23 @@ export class RegionService {
   }
 
   async getById(id: string): Promise<Result<Region | null>> {
+    const session = await this.sessionService.startSession();
+
+    session.startTransaction();
     try {
-      const region = await this.regionRepository.findById(id);
+      const region = await this.regionRepository.findById(id, session);
+
+      await session.commitTransaction();
+      session.endSession();
+
       return {
         success: true,
         data: region,
       };
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+
       return {
         success: false,
         error: {
@@ -102,6 +122,9 @@ export class RegionService {
   }
 
   async getByPoint(queryInput: QueryByPointDTO): Promise<Result<Region[]>> {
+    const session = await this.sessionService.startSession();
+
+    session.startTransaction();
     try {
       const { lat, lng } = queryInput;
       const point = {
@@ -112,19 +135,28 @@ export class RegionService {
         ],
       };
 
-      const regions = await this.regionRepository.findByQuery({
-        geometry: {
-          $geoIntersects: {
-            $geometry: point,
+      const regions = await this.regionRepository.findByQuery(
+        {
+          geometry: {
+            $geoIntersects: {
+              $geometry: point,
+            },
           },
         },
-      });
+        session,
+      );
+
+      await session.commitTransaction();
+      session.endSession();
 
       return {
         success: true,
         data: regions,
       };
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+
       return {
         success: false,
         error: {
@@ -136,6 +168,8 @@ export class RegionService {
   }
 
   async getByDistance(queryInput: QueryByDistanceDTO) {
+    const session = await this.sessionService.startSession();
+    session.startTransaction();
     try {
       const { lat, lng, distance } = queryInput;
       const query: FilterQuery<Region> = {
@@ -153,12 +187,19 @@ export class RegionService {
         },
       };
 
-      const regions = await this.regionRepository.findByQuery(query);
+      const regions = await this.regionRepository.findByQuery(query, session);
+
+      await session.commitTransaction();
+      session.endSession();
+
       return {
         success: true,
         data: regions,
       };
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+
       return {
         success: false,
         error: {
