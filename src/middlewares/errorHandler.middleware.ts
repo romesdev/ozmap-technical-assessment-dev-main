@@ -10,6 +10,8 @@ export function errorHandlerMiddleware(
   err: AppError,
   _: unknown,
   res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  __: unknown,
 ) {
   const statusCode = err.statusCode || HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR;
 
