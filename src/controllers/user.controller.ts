@@ -24,9 +24,11 @@ export class UserController {
     }
   }
 
-  async get(_req: Request, res: Response) {
+  async get(req: Request, res: Response) {
     try {
-      const response = await this.userService.get();
+      const { page, limit } = req.query;
+
+      const response = await this.userService.get(Number(page), Number(limit));
       if (response.success === false) return res.status(400).json(response);
 
       return res.status(200).json(response);

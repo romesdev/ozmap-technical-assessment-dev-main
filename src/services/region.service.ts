@@ -65,12 +65,12 @@ export class RegionService {
     }
   }
 
-  async get(): Promise<Result<Region[]>> {
+  async get(page: number = 1, limit: number = 10): Promise<Result<Region[]>> {
     const session = await this.sessionService.startSession();
 
     session.startTransaction();
     try {
-      const regions = await this.regionRepository.find(session);
+      const regions = await this.regionRepository.find(page, limit, session);
 
       await session.commitTransaction();
       session.endSession();
@@ -121,7 +121,11 @@ export class RegionService {
     }
   }
 
-  async getByPoint(queryInput: QueryByPointDTO): Promise<Result<Region[]>> {
+  async getByPoint(
+    queryInput: QueryByPointDTO,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<Result<Region[]>> {
     const session = await this.sessionService.startSession();
 
     session.startTransaction();
@@ -143,6 +147,8 @@ export class RegionService {
             },
           },
         },
+        page,
+        limit,
         session,
       );
 
@@ -167,7 +173,11 @@ export class RegionService {
     }
   }
 
-  async getByDistance(queryInput: QueryByDistanceDTO) {
+  async getByDistance(
+    queryInput: QueryByDistanceDTO,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     const session = await this.sessionService.startSession();
     session.startTransaction();
     try {
@@ -187,7 +197,12 @@ export class RegionService {
         },
       };
 
-      const regions = await this.regionRepository.findByQuery(query, session);
+      const regions = await this.regionRepository.findByQuery(
+        query,
+        page,
+        limit,
+        session,
+      );
 
       await session.commitTransaction();
       session.endSession();

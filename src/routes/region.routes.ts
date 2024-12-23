@@ -12,6 +12,7 @@ import { RegionRepository } from "../repositories/region.repository";
 import { RegionModel } from "../models/region.model";
 import { validateQuery } from "../middlewares/validateQuery.middleware";
 import { UserModel } from "../models/user.model";
+import { queryPaginationSchema } from "../schemas/pagination.schema";
 
 const router = Router();
 
@@ -30,7 +31,11 @@ router.post(
   validateData(saveRegionSchema),
   regionController.create.bind(regionController),
 );
-router.get("/", regionController.get.bind(regionController));
+router.get(
+  "/",
+  validateQuery(queryPaginationSchema),
+  regionController.get.bind(regionController),
+);
 router.get(
   "/point",
   validateQuery(queryRegionsByPointSchema),

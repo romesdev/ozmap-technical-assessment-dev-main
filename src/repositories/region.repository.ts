@@ -1,6 +1,7 @@
 import mongoose, { FilterQuery, Model } from "mongoose";
 import { Geometry } from "../dtos/region.dto";
 import { Region } from "../models/region.model";
+import { calculateSkipNumber } from "../utils/functions";
 
 export class RegionRepository {
   constructor(private readonly model: Model<Region>) {}
@@ -13,8 +14,18 @@ export class RegionRepository {
     return region;
   }
 
-  async find(session?: mongoose.ClientSession) {
-    return await this.model.find({}, null, { session }).populate("owner");
+  async find(
+    page: number = 1,
+    limit: number = 10,
+    session?: mongoose.ClientSession,
+  ) {
+    const skip = calculateSkipNumber(page, limit);
+
+    return await this.model
+      .find({}, null, { session })
+      .skip(skip)
+      .limit(limit)
+      .populate("owner");
   }
 
   async findById(id: string, session?: mongoose.ClientSession) {
@@ -38,23 +49,14 @@ export class RegionRepository {
     return await this.model.findByIdAndDelete(id, { session }).lean().exec();
   }
 
-  async findByPoint(point: Geometry, session?: mongoose.ClientSession) {
-    const region = await this.model.find(
-      {
-        geometry: {
-          $geoIntersects: {
-            $geometry: point,
-          },
-        },
-      },
-      null,
-      { session },
-    );
+  async findByPoint(
+    point: Geometry,
+    page: number = 1,
+    limit: number = 10,
+    session?: mongoose.ClientSession,
+  ) {
+    const skip = calculateSkipNumber(page, limit);
 
-    return region;
-  }
-
-  async findByDistance(point: Geometry, session?: mongoose.ClientSession) {
     const region = await this.model
       .find(
         {
@@ -67,6 +69,35 @@ export class RegionRepository {
         null,
         { session },
       )
+      .skip(skip)
+      .limit(limit)
+      .populate("owner");
+
+    return region;
+  }
+
+  async findByDistance(
+    point: Geometry,
+    page: number = 1,
+    limit: number = 10,
+    session?: mongoose.ClientSession,
+  ) {
+    const skip = calculateSkipNumber(page, limit);
+
+    const region = await this.model
+      .find(
+        {
+          geometry: {
+            $geoIntersects: {
+              $geometry: point,
+            },
+          },
+        },
+        null,
+        { session },
+      )
+      .skip(skip)
+      .limit(limit)
       .populate("owner");
 
     return region;
@@ -74,10 +105,16 @@ export class RegionRepository {
 
   async findByQuery(
     query: FilterQuery<Region>,
+    page: number = 1,
+    limit: number = 10,
     session?: mongoose.ClientSession,
   ) {
+    const skip = calculateSkipNumber(page, limit);
+
     return await this.model
       .find(query, null, { session })
+      .skip(skip)
+      .limit(limit)
       .populate("owner")
       .exec();
   }

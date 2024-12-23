@@ -29,7 +29,12 @@ export class RegionController {
 
   async get(req: Request, res: Response) {
     try {
-      const response = await this.regionService.get();
+      const { page, limit } = req.query;
+
+      const response = await this.regionService.get(
+        Number(page),
+        Number(limit),
+      );
       if (response.success === false)
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 
@@ -44,14 +49,18 @@ export class RegionController {
 
   async getByPoint(req: Request, res: Response) {
     try {
-      const { lat, lng } = req.query;
+      const { lat, lng, page, limit } = req.query;
 
       const query = {
         lat: lat as unknown as string,
         lng: lng as unknown as string,
       };
 
-      const response = await this.regionService.getByPoint(query);
+      const response = await this.regionService.getByPoint(
+        query,
+        Number(page),
+        Number(limit),
+      );
       if (response.success === false)
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 
@@ -66,7 +75,7 @@ export class RegionController {
 
   async getByDistance(req: Request, res: Response) {
     try {
-      const { lat, lng, distance } = req.query;
+      const { lat, lng, distance, page, limit } = req.query;
 
       const query = {
         lat: lat as unknown as string,
@@ -74,7 +83,11 @@ export class RegionController {
         distance: distance as unknown as string,
       };
 
-      const response = await this.regionService.getByDistance(query);
+      const response = await this.regionService.getByDistance(
+        query,
+        Number(page),
+        Number(limit),
+      );
       if (response.success === false)
         return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json(response);
 

@@ -67,12 +67,12 @@ export class UserService {
     }
   }
 
-  async get(): Promise<Result<User[]>> {
+  async get(page: number = 1, limit: number = 10): Promise<Result<User[]>> {
     const session = await this.sessionService.startSession();
     session.startTransaction();
 
     try {
-      const users = await this.userRepository.find(session);
+      const users = await this.userRepository.find(page, limit, session);
       await session.commitTransaction();
       session.endSession();
 

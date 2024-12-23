@@ -1,6 +1,7 @@
 import mongoose, { Model } from "mongoose";
 import { SaveUserDTO } from "../dtos/user.dto";
 import { User } from "../models/user.model";
+import { calculateSkipNumber } from "../utils/functions";
 
 export class UserRepository {
   constructor(private readonly model: Model<User>) {}
@@ -10,8 +11,13 @@ export class UserRepository {
     return user;
   }
 
-  async find(session?: mongoose.ClientSession) {
-    return await this.model.find({}, null, { session });
+  async find(
+    page: number = 1,
+    limit: number = 10,
+    session?: mongoose.ClientSession,
+  ) {
+    const skip = calculateSkipNumber(page, limit);
+    return await this.model.find({}, null, { session }).skip(skip).limit(limit);
   }
 
   async findById(id: string, session?: mongoose.ClientSession) {
